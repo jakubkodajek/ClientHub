@@ -15,9 +15,9 @@ service cloud.firestore {
         match /links/{linkId} {
           allow read: if request.auth != null && request.auth.uid == userId;
           allow create: if request.auth != null && request.auth.uid == userId
-            && request.resource.data.keys().hasOnly(['name', 'url', 'description', 'icon', 'color', 'createdAt']);
+            && request.resource.data.keys().hasOnly(['name', 'url', 'description', 'icon', 'color', 'order', 'createdAt']);
           allow update: if request.auth != null && request.auth.uid == userId
-            && request.resource.data.keys().hasOnly(['name', 'url', 'description', 'icon', 'color', 'createdAt']);
+            && request.resource.data.keys().hasOnly(['name', 'url', 'description', 'icon', 'color', 'order', 'createdAt']);
           allow delete: if request.auth != null && request.auth.uid == userId;
         }
       }

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Settings, Plus } from 'lucide-react';
 import LinkCard from './LinkCard';
 import type { Client, Link } from '../types';
@@ -10,6 +11,7 @@ interface ClientDetailProps {
   onAddLink: () => void;
   onEditLink: (link: Link) => void;
   onDeleteLink: (linkId: string) => void;
+  onReorderLinks: (orderedIds: string[]) => Promise<void> | void;
 }
 
 export default function ClientDetail({
@@ -20,7 +22,32 @@ export default function ClientDetail({
   onAddLink,
   onEditLink,
   onDeleteLink,
+  onReorderLinks,
 }: ClientDetailProps) {
+  const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [dropTargetId, setDropTargetId] = useState<string | null>(null);
+
+  const handleDrop = (targetId: string) => {
+    if (!draggingId || draggingId === targetId) {
+      setDraggingId(null);
+      setDropTargetId(null);
+      return;
+    }
+    const ids = links.map((l) => l.id);
+    const fromIdx = ids.indexOf(draggingId);
+    const toIdx = ids.indexOf(targetId);
+    if (fromIdx === -1 || toIdx === -1) {
+      setDraggingId(null);
+      setDropTargetId(null);
+      return;
+    }
+    ids.splice(fromIdx, 1);
+    ids.splice(toIdx, 0, draggingId);
+    setDraggingId(null);
+    setDropTargetId(null);
+    void onReorderLinks(ids);
+  };
+
   return (
     <section className="flex-1 overflow-y-auto overflow-x-hidden">
       {/* Top Bar */}
@@ -87,8 +114,25 @@ export default function ClientDetail({
               <LinkCard
                 key={link.id}
                 link={link}
+                isDragging={draggingId === link.id}
+                isDropTarget={
+                  dropTargetId === link.id &&
+                  draggingId !== null &&
+                  draggingId !== link.id
+                }
                 onEdit={() => onEditLink(link)}
                 onDelete={() => onDeleteLink(link.id)}
+                onDragStart={() => setDraggingId(link.id)}
+                onDragEnter={() => {
+                  if (draggingId && draggingId !== link.id) {
+                    setDropTargetId(link.id);
+                  }
+                }}
+                onDrop={() => handleDrop(link.id)}
+                onDragEnd={() => {
+                  setDraggingId(null);
+                  setDropTargetId(null);
+                }}
               />
             ))}
 

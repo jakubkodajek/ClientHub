@@ -12,7 +12,7 @@ import type { Link } from '../types';
 export default function Dashboard() {
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   const { clients, loading: clientsLoading, addClient, updateClient, deleteClient } = useClients();
-  const { links, loading: linksLoading, addLink, updateLink, deleteLink } = useLinks(selectedClientId);
+  const { links, loading: linksLoading, addLink, updateLink, deleteLink, reorderLinks } = useLinks(selectedClientId);
 
   const [showAddClient, setShowAddClient] = useState(false);
   const [showEditClient, setShowEditClient] = useState(false);
@@ -52,6 +52,7 @@ export default function Dashboard() {
             onAddLink={() => setShowAddLink(true)}
             onEditLink={(link) => setEditingLink(link)}
             onDeleteLink={(linkId) => deleteLink(linkId)}
+            onReorderLinks={reorderLinks}
           />
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center gap-6 p-8">

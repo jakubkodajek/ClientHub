@@ -21,5 +21,6 @@ export interface Link {
   url: string;
   description: string;
   icon: string;
+  order?: number;
   createdAt: Timestamp;
 }
